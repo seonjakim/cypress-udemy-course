@@ -157,4 +157,41 @@ describe("Our first suite", () => {
     cy.get('[type="checkbox"]').check({ force: true });
     cy.get('[type="checkbox"]').eq(0).click({ force: true });
   });
+
+  it.only("list and dropdowns", () => {
+    cy.visit("/");
+
+    cy.get("nav nb-select").click();
+    cy.get(".options-list").contains("Dark").click();
+    cy.get("nav nb-select").should("contain", "Dark");
+    cy.get("nb-layout-header nav").should(
+      "have.css",
+      "background-color",
+      "rgb(34, 43, 69)"
+    );
+
+    // remove duplication for dropdowns
+
+    cy.get("nav nb-select").then((dropdown) => {
+      cy.wrap(dropdown).click();
+      cy.get(".options-list nb-option") // interation
+        .each((list, index) => {
+          const text = list.text().trim(); //remove space
+          const colors = {
+            Light: "rgb(255, 255, 255)",
+            Dark: "rgb(34, 43, 69)",
+            Cosmic: "rgb(50, 50, 89)",
+            Corporate: "rgb(255, 255, 255)",
+          };
+          cy.wrap(text).click();
+          cy.wrap(dropdown).should("contain", text);
+          cy.get("nb-layout-header nav").should(
+            "have.css",
+            "background-color",
+            colors[text] // interation
+          );
+          if (index < 3) cy.wrap(dropdown).click();
+        });
+    });
+  });
 });
