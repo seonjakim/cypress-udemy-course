@@ -127,4 +127,34 @@ describe("Our first suite", () => {
           .should("contain", "Dec 17, 2019");
       });
   });
+
+  it.only("radio button", () => {
+    cy.visit("/");
+    cy.contains("Forms").click();
+    cy.contains("Form Layouts").click();
+
+    // gonna return 3 elements
+    cy.contains("nb-card", "Using the Grid")
+      .find('[type="radio"]')
+      .then((radio) => {
+        cy.wrap(radio).first().check({ force: true }).should("be.checked");
+        // element with index
+        cy.wrap(radio).eq(1).check({ force: true });
+
+        cy.wrap(radio).first().should("not.be.checked");
+
+        cy.wrap(radio).eq(2).should("be.disabled");
+      });
+  });
+
+  it.only("check boxes", () => {
+    cy.visit("/");
+    cy.contains("Modal & Overlays").click();
+    cy.contains("Toaster").click();
+
+    // check all the check box not like click
+    // check only for radio or checkbox
+    cy.get('[type="checkbox"]').check({ force: true });
+    cy.get('[type="checkbox"]').eq(0).click({ force: true });
+  });
 });
