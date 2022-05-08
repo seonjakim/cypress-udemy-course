@@ -117,14 +117,34 @@ describe("Our first suite", () => {
     cy.contains("Forms").click();
     cy.contains("Datepicker").click();
 
+    function selectDayFromCurrent(day) {
+      let date = new Date();
+      date.setDate(date.getDate() + day);
+
+      let futureDay = date.getDate();
+      let futureMonth = date.toLocaleString("default", { month: "short" });
+      let dateAssert =
+        futureMonth + " " + futureDay + ", " + date.getFullYear();
+      cy.get("nb-calendar-navigation")
+        .invoke("attr", "ng-reflect-date")
+        .then((date) => {
+          if (!date.includes(futureMonth)) {
+            cy.get('[date-name="chevron-right"]').click();
+            selectDayFromCurrent(day);
+          }
+          cy.get('nb-calendar-day-picker [class="day-cell ng-star-inserted"]')
+            .contains(futureDay)
+            .click();
+        });
+      return dateAssert;
+    }
     cy.contains("nb-card", "Common Datepicker")
       .find("input")
       .then((input) => {
         cy.wrap(input).click();
-        cy.get("nb-calendar-day-picker").contains("17").click();
-        cy.wrap(input)
-          .invoke("prop", "value")
-          .should("contain", "Dec 17, 2019");
+        const dateAssert = selectDayFromCurrent(5);
+        // cy.get("nb-calendar-day-picker").contains("17").click();
+        cy.wrap(input).invoke("prop", "value").should("contain", dateAssert);
       });
   });
 
