@@ -194,4 +194,49 @@ describe("Our first suite", () => {
         });
     });
   });
+
+  it.only("Web tables", () => {
+    cy.visit("/");
+    cy.contains("Tables & Data").click();
+    cy.contains("Smart Table").click();
+
+    cy.get("tbody")
+      .contains("tr", "Larry")
+      .then((row) => {
+        cy.wrap(row).find(".nb-edit").click();
+        cy.wrap(row).find('[placeholder="Age"]').clear().type("25");
+        cy.wrap(row).find(".nb-checkmark").click();
+        cy.wrap(row).find("td").eq(6).should("contain", "25");
+      });
+
+    cy.get("thead").find(".nb-plus").click();
+    cy.get("thead")
+      .find("tr")
+      .eq(2)
+      .then((row) => {
+        cy.wrap(row).find('[placeholder="First Name"]').type("Artem");
+        cy.wrap(row).find('[placeholder="Last Name"]').type("Bonder");
+        cy.wrap(row).find(".nb-checkmark").click();
+      });
+    cy.get("tbody tr")
+      .first()
+      .find("td")
+      .then((col) => {
+        cy.wrap(col).eq(2).should("contain", "Artem");
+        cy.wrap(col).eq(3).should("contain", "Bonder");
+      });
+
+    const age = [20, 30, 40, 200];
+    cy.wrap(age).each((age) => {
+      cy.get('thead [placeholder="Age"]').clear().type(age);
+      cy.wait(500);
+      cy.get("tbody tr").each((row) => {
+        if (age === 200) {
+          cy.wrap(row).should("contain", "No data found");
+        } else {
+          cy.wrap(row).find("td").eq(6).should("contain", age);
+        }
+      });
+    });
+  });
 });
