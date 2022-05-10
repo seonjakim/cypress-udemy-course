@@ -1,0 +1,21 @@
+{
+  "articles":[
+    {
+      "title":"This is a title of the Article",
+      "slug":"this-is-a-title-of-the-article-3putmt",
+      "body":"This is a body or the article",
+      "createdAt":"2022",
+      "updatedAt":"2022",
+      "tagList":[],
+      "description":"This is a description",
+      "author": {
+        "username":"CyTester",
+        "bio":null,
+        "image":"https://image",
+        "following":false
+      },
+      "favorited":false,
+      "favoritesCount":0
+    }
+  ]
+}

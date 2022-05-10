@@ -2,6 +2,8 @@
 
 describe("Test with backend", () => {
   beforeEach("login to the app", () => {
+    cy.server();
+    cy.route("GET", "**/tags", "fixture:tags.json");
     cy.loginToApplication();
   });
 
@@ -27,5 +29,30 @@ describe("Test with backend", () => {
         "This is a description"
       );
     });
+  });
+
+  it("should gave tags with routing object", () => {
+    cy.get(".tag-list")
+      .should("contain", "cypress")
+      .and("contain", "automation")
+      .and("contain", "testing");
+  });
+
+  it("verify global feed likes count", () => {
+    cy.route("GET", "**/articles/feed*", '{"articles":[],"articlesCount":0}');
+    cy.route("GET", "**/articles*", "fixture:articles.json");
+
+    cy.contains("Global Feed").click();
+    cy.get("app-article-list button").then((buttons) => {
+      expect(buttons[0]).to.contain("1");
+      expect(buttons[1]).to.contain("5");
+    });
+
+    cy.fixture("articles").then((file) => {
+      const id = file.articles[0].slug;
+      cy.route("POST", `**/articles/${id}/favorite`, file);
+    });
+
+    cy.get("app-article-list button").eq(0).click().should("contain", "1");
   });
 });
